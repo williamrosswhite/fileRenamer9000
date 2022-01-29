@@ -1,0 +1,6 @@
+designate filename or leave hidden
+only handle specific file types
+exclude certain file types
+strip out certain strings
+designated enter button function
+right click functionality
