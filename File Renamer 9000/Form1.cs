@@ -359,5 +359,6 @@ namespace File_Renamer_9000
         // TO DO: fix must select valid file path error
         // TO DO: allow '- tag' to persist on sanitize
         // TO DO: allow activation on pressing Enter
+        // TO DO: create a function to auto sanitize entire previous years
     }
 }
