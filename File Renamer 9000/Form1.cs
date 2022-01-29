@@ -290,7 +290,7 @@ namespace File_Renamer_9000
             return returnString;
         }
 
-        private void sanitizedDashClick(object sender, EventArgs e)
+        private void sanitizeDateClick(object sender, EventArgs e)
         {
             try
             {
@@ -299,7 +299,7 @@ namespace File_Renamer_9000
 
                 foreach (FileInfo file in targetDirectoryInfo.GetFiles())
                 {
-                    string newFileName = sanitizeDashed(Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension);
+                    string newFileName = sanitizeDate(Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension);
                     file.MoveTo(newFileName);
                 }
             }
@@ -316,14 +316,20 @@ namespace File_Renamer_9000
             }
         }
 
-        private string sanitizeDashed(string originalName, string originalPath, string originalExtension)
+        private string sanitizeDate(string originalName, string originalPath, string originalExtension)
         {
             StringBuilder sb = new StringBuilder(originalPath);
             sb.Append('\\');
 
             string[] splitDate = Regex.Split(originalName, " - ");
 
+            //splitDate[0] = splitDate[0].Remove(0,3); // remove errant first characters
+            //splitDate[1] = splitDate[0].Substring(0, 17); // trim trailing characters
             splitDate[0] = splitDate[0].Replace("-", "");
+            splitDate[0] = splitDate[0].Replace("_", "");
+            splitDate[0] = splitDate[0].Replace("(", "");
+            splitDate[0] = splitDate[0].Replace(")", "");
+            splitDate[0] = splitDate[0].Replace(" ", "");
             splitDate[0] = splitDate[0].Insert(8, "_");
             splitDate[0] = splitDate[0].PadRight(18, '0');
             sb.Append(splitDate[0]);
@@ -339,9 +345,19 @@ namespace File_Renamer_9000
 
             sb.Append(originalExtension);
             string returnString = sb.ToString();
-            
+
             Console.WriteLine(returnString);
             return returnString;
         }
+
+        // TO DO: clean this shit up!! lol
+        // TO DO: handle file already exists error
+        // TO DO: create a replace string function
+        // TO DO: create the other thing i've forgotten now in 10 seconds
+        // TO DO: ability to open from folder context menu with folder path pre loaded
+        // TO DO: an undo button!!! lol
+        // TO DO: fix must select valid file path error
+        // TO DO: allow '- tag' to persist on sanitize
+        // TO DO: allow activation on pressing Enter
     }
 }
