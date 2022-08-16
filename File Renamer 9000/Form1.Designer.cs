@@ -49,6 +49,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.SanitizeDateButton = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.startNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -111,7 +112,7 @@
             this.startButton.TabIndex = 9;
             this.startButton.Text = "Start Rename";
             this.startButton.UseVisualStyleBackColor = true;
-            this.startButton.Click += new System.EventHandler(this.StartButton_Click);
+            this.startButton.Click += new System.EventHandler(this.StartRenameButton_Click);
             // 
             // instructiosLlabel
             // 
@@ -200,12 +201,12 @@
             this.stripperButton.TabIndex = 20;
             this.stripperButton.Text = "Strip Text";
             this.stripperButton.UseVisualStyleBackColor = true;
-            this.stripperButton.Click += new System.EventHandler(this.StripperButton_Click);
+            this.stripperButton.Click += new System.EventHandler(this.StripTextButton_Click);
             // 
             // DateSanitizerLabel
             // 
             this.DateSanitizerLabel.AutoSize = true;
-            this.DateSanitizerLabel.Location = new System.Drawing.Point(176, 400);
+            this.DateSanitizerLabel.Location = new System.Drawing.Point(30, 400);
             this.DateSanitizerLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.DateSanitizerLabel.Name = "DateSanitizerLabel";
             this.DateSanitizerLabel.Size = new System.Drawing.Size(73, 13);
@@ -232,20 +233,32 @@
             // 
             // SanitizeDateButton
             // 
-            this.SanitizeDateButton.Location = new System.Drawing.Point(297, 391);
+            this.SanitizeDateButton.Location = new System.Drawing.Point(449, 391);
             this.SanitizeDateButton.Margin = new System.Windows.Forms.Padding(2);
             this.SanitizeDateButton.Name = "SanitizeDateButton";
             this.SanitizeDateButton.Size = new System.Drawing.Size(120, 31);
             this.SanitizeDateButton.TabIndex = 29;
-            this.SanitizeDateButton.Text = "Sanitize";
+            this.SanitizeDateButton.Text = "Photo Sanitize ";
             this.SanitizeDateButton.UseVisualStyleBackColor = true;
-            this.SanitizeDateButton.Click += new System.EventHandler(this.sanitizeDateClick);
+            this.SanitizeDateButton.Click += new System.EventHandler(this.PhotoSanitizeButton_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(301, 391);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(120, 31);
+            this.button1.TabIndex = 30;
+            this.button1.Text = "Insta Sanitize ";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.InstaSanitizeButton_Click);
             // 
             // fileRenamer9000
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(615, 443);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.SanitizeDateButton);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.DateSanitizerLabel);
@@ -264,6 +277,7 @@
             this.Controls.Add(this.startLabel);
             this.Controls.Add(this.selectFolderButton);
             this.Controls.Add(this.folderPickerTextBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "fileRenamer9000";
             this.Text = "Form Renamer 9000";
@@ -295,6 +309,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button SanitizeDateButton;
+        private System.Windows.Forms.Button button1;
     }
 }
 
