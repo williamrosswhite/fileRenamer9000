@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,15 +9,19 @@ namespace File_Renamer_9000
 {
     public partial class fileRenamer9000 : Form
     {
-
         int numStart;
         int numCurrent;
         int numOfDigits;
         int numOfHash;
+
         string originalFileNameFormat;
         string newFileNameFormat;
-        bool duplicates = false;
+
         int incrementer = 0;
+
+        LinkedList<DirectoryInfo> filePathLinkedList = new LinkedList<DirectoryInfo>();
+        LinkedList<LinkedList<string>> linkedListOfFileNameLinkedLists = new LinkedList<LinkedList<string>>();
+        DirectoryInfo undoDirectoryInfo;
 
         public fileRenamer9000()
         {
@@ -109,6 +114,10 @@ namespace File_Renamer_9000
             DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
             int numberOfNums = targetDirectoryString.Length;
 
+            var newFileNameLinkedList = new LinkedList<string>();
+            filePathLinkedList.AddLast(targetDirectoryInfo);
+            undoDirectoryInfo = targetDirectoryInfo;
+
             if (numOfHash == 0 && overwriteRadioButton.Checked == true)
             {
                 MessageBox.Show("You must have at least one hashtag within your rename format please");
@@ -122,11 +131,14 @@ namespace File_Renamer_9000
 
                     foreach (FileInfo file in targetDirectoryInfo.GetFiles())
                     {
+                        newFileNameLinkedList.AddLast(file.FullName);
                         string newFileName = NextTitle(Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension);
                         numCurrent++;
                         Console.WriteLine(newFileName);
                         file.MoveTo(newFileName);
                     }
+
+                    linkedListOfFileNameLinkedLists.AddLast(newFileNameLinkedList);
                 }
                 catch (Exception ex)
                 {
@@ -153,10 +165,15 @@ namespace File_Renamer_9000
             originalFileNameFormat = newFileNameFormat;
             newFileNameFormat = 'a' + newFileNameFormat;
 
+            var newFileNameLinkedList = new LinkedList<string>();
+
             DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
+            filePathLinkedList.AddLast(targetDirectoryInfo);
+            undoDirectoryInfo = targetDirectoryInfo;
 
             foreach (FileInfo file in targetDirectoryInfo.GetFiles())
             {
+                newFileNameLinkedList.AddLast(file.FullName);
                 string newFileName = NextTitle('a' + Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension);
                 numCurrent++;
                 Console.WriteLine(newFileName);
@@ -175,6 +192,8 @@ namespace File_Renamer_9000
                 Console.WriteLine(newFileName);
                 file.MoveTo(newFileName);
             }
+
+            linkedListOfFileNameLinkedLists.AddLast(newFileNameLinkedList);
         }
 
         private void StripTextButton_Click(object sender, EventArgs e)
@@ -183,15 +202,21 @@ namespace File_Renamer_9000
             {
                 string targetDirectoryString = folderPickerTextBox.Text;
                 string stripText = stripperTextBox.Text;
+
                 DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
-                
+                var newFileNameLinkedList = new LinkedList<string>();
+                filePathLinkedList.AddLast(targetDirectoryInfo);
+
                 foreach (FileInfo file in targetDirectoryInfo.GetFiles())
                 {
+                    newFileNameLinkedList.AddLast(file.FullName);
                     string newFileName = StrippedTitle(Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension, stripText);
                     numCurrent++;
                     Console.WriteLine(newFileName);
                     file.MoveTo(newFileName);
                 }
+
+                linkedListOfFileNameLinkedLists.AddLast(newFileNameLinkedList);
             }
             catch (Exception ex)
             {
@@ -214,11 +239,17 @@ namespace File_Renamer_9000
                 string targetDirectoryString = folderPickerTextBox.Text;
                 DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
 
+                var newFileNameLinkedList = new LinkedList<string>();
+                filePathLinkedList.AddLast(targetDirectoryInfo);
+
                 foreach (FileInfo file in targetDirectoryInfo.GetFiles())
                 {
+                    newFileNameLinkedList.AddLast(file.FullName);
                     string newFileName = SanitizeCameraDate(Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension);
                     file.MoveTo(newFileName);
                 }
+
+                linkedListOfFileNameLinkedLists.AddLast(newFileNameLinkedList);
             }
             catch (Exception ex)
             {
@@ -244,6 +275,7 @@ namespace File_Renamer_9000
             splitDate[0] = splitDate[0].Replace("_", "");
             splitDate[0] = splitDate[0].Replace("(", "");
             splitDate[0] = splitDate[0].Replace(")", "");
+            splitDate[0] = splitDate[0].Replace(":", "");
             splitDate[0] = splitDate[0].Replace("~", "");
             splitDate[0] = splitDate[0].Replace(" ", "");
             splitDate[0] = splitDate[0].Insert(8, "_");
@@ -285,12 +317,6 @@ namespace File_Renamer_9000
             }
             catch (Exception ex)
             {
-                if(ex.Message == "Cannot create a file when that file already exists.\r\n")
-                {
-                    duplicates = true;
-
-                }
-
                 if (ex is DirectoryNotFoundException || ex is System.ArgumentException)
                 {
                     MessageBox.Show("You must select a valid filepath please");
@@ -329,8 +355,112 @@ namespace File_Renamer_9000
             return returnString;
         }
 
+        private void NameFromDateButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ProcesNameFromDate();
+            }
+            catch (Exception ex)
+            {
+                if (ex is DirectoryNotFoundException || ex is System.ArgumentException)
+                {
+                    MessageBox.Show("You must select a valid filepath please");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        private void ProcesNameFromDate()
+        {
+            string targetDirectoryString = folderPickerTextBox.Text;
+            DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
+
+            var newFileNameLinkedList = new LinkedList<string>();
+            filePathLinkedList.AddLast(targetDirectoryInfo);
+
+            foreach (FileInfo file in targetDirectoryInfo.GetFiles())
+            {
+                newFileNameLinkedList.AddLast(file.FullName);
+
+                var dateTakenYear = file.LastWriteTime.Year.ToString();
+                var dateTakenMonth = file.LastWriteTime.Month.ToString();
+                var paddedDateTakenMonth = dateTakenMonth.PadLeft(2, '0');
+                var dateTakenDay = file.LastWriteTime.Day.ToString();
+                var paddedDateTakenDay = dateTakenDay.PadLeft(2, '0');
+                var dateTakenTime = file.LastWriteTime.TimeOfDay.ToString();
+
+                string newFileName;
+
+                var newDateFileNameString = $"{ dateTakenYear }{ paddedDateTakenMonth }{ paddedDateTakenDay }_{ dateTakenTime }";
+                newFileName = SanitizeCameraDate(newDateFileNameString, file.DirectoryName, file.Extension);
+                var match = File.Exists(newFileName);
+
+                while (match == true)
+                {
+                    newDateFileNameString = $"{ newDateFileNameString.Substring(0, 17) }{ incrementer }";
+                    incrementer++;
+                    newFileName = SanitizeCameraDate(newDateFileNameString, file.DirectoryName, file.Extension);
+                    match = File.Exists(newFileName);
+                }
+
+                file.MoveTo(newFileName);
+            }
+
+            linkedListOfFileNameLinkedLists.AddLast(newFileNameLinkedList);
+        }
+
+        private void UndoButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ProcessUndo();
+            }
+            catch (Exception ex)
+            {
+                if (ex is DirectoryNotFoundException || ex is ArgumentException)
+                {
+                    MessageBox.Show("You must select a valid filepath please");
+                }
+
+                if (ex is DataMisalignedException)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        private void ProcessUndo()
+        {
+            if (filePathLinkedList.Count <= 0 || linkedListOfFileNameLinkedLists.Count <= 0)
+            {
+                throw new DataMisalignedException("Sorry, no remaining undo data");
+            }
+
+            var currentDirectory = filePathLinkedList.Last.Value;
+            filePathLinkedList.RemoveLast();
+
+            var currentFileNameLinkedList = linkedListOfFileNameLinkedLists.Last.Value;
+            linkedListOfFileNameLinkedLists.RemoveLast();
+
+            foreach (FileInfo file in currentDirectory.GetFiles())
+            {
+                Console.WriteLine(currentFileNameLinkedList.Last.Value);
+                file.MoveTo(currentFileNameLinkedList.First.Value);
+                currentFileNameLinkedList.RemoveFirst();
+            }
+        }
+
+
         // TO DO: clean this shit up!! lol
-        // TO DO: handle file already exists error
         // TO DO: create a replace string function
         // TO DO: create the other thing i've forgotten now in 10 seconds
         // TO DO: ability to open from folder context menu with folder path pre loaded

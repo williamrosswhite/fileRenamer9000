@@ -41,15 +41,16 @@
             this.prependRadioButton = new System.Windows.Forms.RadioButton();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.textStripperLabel = new System.Windows.Forms.Label();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.stripperTextBox = new System.Windows.Forms.TextBox();
             this.stripperButton = new System.Windows.Forms.Button();
-            this.DateSanitizerLabel = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.SanitizeDateButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.nameFromDateButton = new System.Windows.Forms.Button();
+            this.UndoButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.startNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -116,7 +117,7 @@
             // 
             // instructiosLlabel
             // 
-            this.instructiosLlabel.Location = new System.Drawing.Point(30, 86);
+            this.instructiosLlabel.Location = new System.Drawing.Point(30, 88);
             this.instructiosLlabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.instructiosLlabel.Name = "instructiosLlabel";
             this.instructiosLlabel.Size = new System.Drawing.Size(254, 33);
@@ -128,7 +129,7 @@
             // 
             this.overwriteRadioButton.AutoSize = true;
             this.overwriteRadioButton.Checked = true;
-            this.overwriteRadioButton.Location = new System.Drawing.Point(212, 189);
+            this.overwriteRadioButton.Location = new System.Drawing.Point(208, 189);
             this.overwriteRadioButton.Margin = new System.Windows.Forms.Padding(2);
             this.overwriteRadioButton.Name = "overwriteRadioButton";
             this.overwriteRadioButton.Size = new System.Drawing.Size(68, 17);
@@ -165,18 +166,18 @@
             this.label1.Location = new System.Drawing.Point(15, 231);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(586, 1);
+            this.label1.Size = new System.Drawing.Size(550, 1);
             this.label1.TabIndex = 17;
             // 
-            // label2
+            // textStripperLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(30, 261);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(67, 13);
-            this.label2.TabIndex = 18;
-            this.label2.Text = "Text Stripper";
+            this.textStripperLabel.AutoSize = true;
+            this.textStripperLabel.Location = new System.Drawing.Point(30, 261);
+            this.textStripperLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.textStripperLabel.Name = "textStripperLabel";
+            this.textStripperLabel.Size = new System.Drawing.Size(67, 13);
+            this.textStripperLabel.TabIndex = 18;
+            this.textStripperLabel.Text = "Text Stripper";
             // 
             // imageList1
             // 
@@ -203,23 +204,13 @@
             this.stripperButton.UseVisualStyleBackColor = true;
             this.stripperButton.Click += new System.EventHandler(this.StripTextButton_Click);
             // 
-            // DateSanitizerLabel
-            // 
-            this.DateSanitizerLabel.AutoSize = true;
-            this.DateSanitizerLabel.Location = new System.Drawing.Point(30, 400);
-            this.DateSanitizerLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.DateSanitizerLabel.Name = "DateSanitizerLabel";
-            this.DateSanitizerLabel.Size = new System.Drawing.Size(73, 13);
-            this.DateSanitizerLabel.TabIndex = 22;
-            this.DateSanitizerLabel.Text = "Date Sanitizer";
-            // 
             // label4
             // 
             this.label4.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.label4.Location = new System.Drawing.Point(15, 356);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(586, 1);
+            this.label4.Size = new System.Drawing.Size(550, 1);
             this.label4.TabIndex = 21;
             // 
             // label5
@@ -228,12 +219,12 @@
             this.label5.Location = new System.Drawing.Point(15, 66);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(586, 1);
+            this.label5.Size = new System.Drawing.Size(550, 1);
             this.label5.TabIndex = 27;
             // 
             // SanitizeDateButton
             // 
-            this.SanitizeDateButton.Location = new System.Drawing.Point(449, 391);
+            this.SanitizeDateButton.Location = new System.Drawing.Point(156, 391);
             this.SanitizeDateButton.Margin = new System.Windows.Forms.Padding(2);
             this.SanitizeDateButton.Name = "SanitizeDateButton";
             this.SanitizeDateButton.Size = new System.Drawing.Size(120, 31);
@@ -244,7 +235,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(301, 391);
+            this.button1.Location = new System.Drawing.Point(297, 391);
             this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(120, 31);
@@ -253,19 +244,42 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.InstaSanitizeButton_Click);
             // 
+            // nameFromDateButton
+            // 
+            this.nameFromDateButton.Location = new System.Drawing.Point(15, 391);
+            this.nameFromDateButton.Margin = new System.Windows.Forms.Padding(2);
+            this.nameFromDateButton.Name = "nameFromDateButton";
+            this.nameFromDateButton.Size = new System.Drawing.Size(120, 31);
+            this.nameFromDateButton.TabIndex = 31;
+            this.nameFromDateButton.Text = "Name From Date";
+            this.nameFromDateButton.UseVisualStyleBackColor = true;
+            this.nameFromDateButton.Click += new System.EventHandler(this.NameFromDateButton_Click);
+            // 
+            // UndoButton
+            // 
+            this.UndoButton.Location = new System.Drawing.Point(441, 391);
+            this.UndoButton.Margin = new System.Windows.Forms.Padding(2);
+            this.UndoButton.Name = "UndoButton";
+            this.UndoButton.Size = new System.Drawing.Size(120, 31);
+            this.UndoButton.TabIndex = 32;
+            this.UndoButton.Text = "Undo";
+            this.UndoButton.UseVisualStyleBackColor = true;
+            this.UndoButton.Click += new System.EventHandler(this.UndoButton_Click);
+            // 
             // fileRenamer9000
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(615, 443);
+            this.ClientSize = new System.Drawing.Size(575, 443);
+            this.Controls.Add(this.UndoButton);
+            this.Controls.Add(this.nameFromDateButton);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.SanitizeDateButton);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.DateSanitizerLabel);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.stripperButton);
             this.Controls.Add(this.stripperTextBox);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.textStripperLabel);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.prependRadioButton);
             this.Controls.Add(this.appendRadioButton);
@@ -301,15 +315,16 @@
         private System.Windows.Forms.RadioButton prependRadioButton;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label textStripperLabel;
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.TextBox stripperTextBox;
         private System.Windows.Forms.Button stripperButton;
-        private System.Windows.Forms.Label DateSanitizerLabel;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button SanitizeDateButton;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button nameFromDateButton;
+        private System.Windows.Forms.Button UndoButton;
     }
 }
 
