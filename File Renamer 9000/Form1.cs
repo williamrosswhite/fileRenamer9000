@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace File_Renamer_9000
 {
@@ -174,7 +180,7 @@ namespace File_Renamer_9000
             foreach (FileInfo file in targetDirectoryInfo.GetFiles())
             {
                 newFileNameLinkedList.AddLast(file.FullName);
-                string newFileName = NextTitle('a' + Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension);
+                string newFileName = NextTitle('b' + Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension);
                 numCurrent++;
                 Console.WriteLine(newFileName);
                 file.MoveTo(newFileName);
@@ -253,10 +259,17 @@ namespace File_Renamer_9000
             }
             catch (Exception ex)
             {
-                if (ex is DirectoryNotFoundException || ex is System.ArgumentException)
+                if (ex is DirectoryNotFoundException || ex is ArgumentException)
                 {
                     MessageBox.Show("You must select a valid filepath please");
                 }
+
+                if (ex is IOException)
+                {
+                    string targetDirectoryString = folderPickerTextBox.Text;
+                    ReprocessForExistingFileNames(targetDirectoryString);
+                }
+
                 else
                 {
                     throw;
@@ -307,7 +320,7 @@ namespace File_Renamer_9000
 
                 foreach (FileInfo file in targetDirectoryInfo.GetFiles())
                 {
-                    if (incrementer >= 10)
+                    if (incrementer >= 99)
                     {
                         incrementer = 0;
                     }
@@ -339,10 +352,15 @@ namespace File_Renamer_9000
 
             while (match == true)
             {
+                if (incrementer >= 99)
+                {
+                    incrementer = 0;
+                }
+
                 splitDate[0] = splitDate[0].PadRight(30, '0');
-                splitDate[0] = splitDate[0].Substring(0, 18); // trim trailing characters
+                splitDate[0] = splitDate[0].Substring(0, 16); // trim trailing characters
                 splitDate[0] = $"{splitDate[0]}{incrementer}";
-                match = File.Exists(splitDate[0]);
+                match = File.Exists($"{originalPath}\\{splitDate[0]}{originalExtension}");
                 incrementer++;
             }
 
@@ -401,7 +419,12 @@ namespace File_Renamer_9000
 
                 while (match == true)
                 {
-                    newDateFileNameString = $"{ newDateFileNameString.Substring(0, 17) }{ incrementer }";
+                    if (incrementer >= 99)
+                    {
+                        incrementer = 0;
+                    }
+
+                    newDateFileNameString = $"{ newDateFileNameString.Substring(0, 16) }{ incrementer }";
                     incrementer++;
                     newFileName = SanitizeCameraDate(newDateFileNameString, file.DirectoryName, file.Extension);
                     match = File.Exists(newFileName);
@@ -458,6 +481,347 @@ namespace File_Renamer_9000
                 currentFileNameLinkedList.RemoveFirst();
             }
         }
+
+        private void ScrapeCleaner_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string targetDirectoryString = folderPickerTextBox.Text;
+                DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
+                DirectoryInfo[] directoryArray = targetDirectoryInfo.GetDirectories("*.*", SearchOption.TopDirectoryOnly);
+
+                foreach (DirectoryInfo dirInfo in directoryArray)
+                {
+                    Thread t = new Thread(() => threadableProcesser(dirInfo));
+                    t.Start();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex is DirectoryNotFoundException || ex is ArgumentException)
+                {
+                    MessageBox.Show("You must select a valid filepath please");
+                }
+            }
+
+            MessageBox.Show("Operation Complete");
+        }
+
+        private void threadableProcesser(DirectoryInfo dirInfo)
+        {
+            DirectoryInfo[] userFolderArray = null;
+            userFolderArray = dirInfo.GetDirectories("*.*", SearchOption.AllDirectories);
+
+            DirectoryInfo thumbs = userFolderArray.FirstOrDefault(f => f.Name == ".thumb.stogram");
+            if (thumbs != null)
+            {
+                thumbs.Delete(true);
+            }
+
+            DirectoryInfo highlights = userFolderArray.FirstOrDefault(f => f.Name == "highlights");
+            DirectoryInfo reels = userFolderArray.FirstOrDefault(f => f.Name == "reels");
+            DirectoryInfo story = userFolderArray.FirstOrDefault(f => f.Name == "story");
+            DirectoryInfo tagged = userFolderArray.FirstOrDefault(f => f.Name == "tagged");
+
+            if (highlights != null)
+            {
+                List<string> highligthsFolder = Directory.GetFiles(highlights.FullName, "*.*", SearchOption.AllDirectories).ToList();
+                foreach (string file in highligthsFolder)
+                {
+                    try
+                    {
+                        FileInfo uFile = new FileInfo(file);
+                        if (new FileInfo(dirInfo + "\\" + uFile.Name).Exists == false)
+                        {
+                            var match = File.Exists($"{dirInfo.FullName}\\{uFile.Name}");
+
+                            string fileString = uFile.Name;
+
+                            var folderString = dirInfo.FullName.ToString();
+
+                            while (match == true)
+                            {
+                                if (incrementer >= 99)
+                                {
+                                    incrementer = 0;
+                                }
+
+                                folderString = $"{ uFile.Name.Substring(0, 49) }{ incrementer }";
+                                incrementer++;
+
+                                match = File.Exists($"{folderString}\\{fileString}");
+                            }
+
+                            File.Move(uFile.ToString(), $"{folderString}\\{fileString}");
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        continue;
+                    }
+
+                }
+            }
+
+            if (reels != null)
+            {
+                List<string> highligthsFolder = Directory.GetFiles(reels.FullName, "*.*", SearchOption.AllDirectories).ToList();
+                foreach (string file in highligthsFolder)
+                {
+                    FileInfo uFile = new FileInfo(file);
+                    if (new FileInfo(dirInfo + "\\" + uFile.Name).Exists == false)
+                    {
+                        var match = File.Exists($"{dirInfo.FullName}\\{uFile.Name}");
+
+                        string fileString = uFile.Name;
+
+                        var folderString = dirInfo.FullName.ToString();
+
+                        while (match == true)
+                        {
+                            if (incrementer >= 99)
+                            {
+                                incrementer = 0;
+                            }
+
+                            folderString = $"{ uFile.Name.Substring(0, 49) }{ incrementer }";
+                            incrementer++;
+
+                            match = File.Exists($"{folderString}\\{fileString}");
+                        }
+
+                        File.Move(uFile.ToString(), $"{folderString}\\{fileString}");
+                    }
+                }
+            }
+
+            if (story != null)
+            {
+                List<string> highligthsFolder = Directory.GetFiles(story.FullName, "*.*", SearchOption.AllDirectories).ToList();
+                foreach (string file in highligthsFolder)
+                {
+                    FileInfo uFile = new FileInfo(file);
+                    if (new FileInfo(dirInfo + "\\" + uFile.Name).Exists == false)
+                    {
+                        try
+                        {
+                            var match = File.Exists($"{dirInfo.FullName}\\{uFile.Name}");
+
+                            string fileString = uFile.Name;
+
+                            var folderString = dirInfo.FullName.ToString();
+
+                            while (match == true)
+                            {
+                                if (incrementer >= 99)
+                                {
+                                    incrementer = 0;
+                                }
+
+                                folderString = $"{ uFile.Name.Substring(0, 49) }{ incrementer }";
+                                incrementer++;
+
+                                match = File.Exists($"{folderString}\\{fileString}");
+                            }
+
+                            File.Move(uFile.ToString(), $"{folderString}\\{fileString}");
+
+                        } 
+
+                        catch (Exception ex)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+
+            if (tagged != null)
+            {
+                List<string> highligthsFolder = Directory.GetFiles(tagged.FullName, "*.*", SearchOption.AllDirectories).ToList();
+                foreach (string file in highligthsFolder)
+                {
+                    FileInfo uFile = new FileInfo(file);
+                    if (new FileInfo(dirInfo + "\\" + uFile.Name).Exists == false)
+                    {
+                        var match = File.Exists($"{dirInfo.FullName}\\{uFile.Name}");
+
+                        string fileString = uFile.Name;
+
+                        var folderString = dirInfo.FullName.ToString();
+
+                        while (match == true)
+                        {
+                            if (incrementer >=99)
+                            {
+                                incrementer = 0;
+                            }
+
+                            folderString = $"{ uFile.Name.Substring(0, 49) }{ incrementer }";
+                            incrementer++;
+
+                            match = File.Exists($"{folderString}\\{fileString}");
+                        }
+
+                        File.Move(uFile.ToString(), $"{folderString}\\{fileString}");
+                    }
+                }
+            }
+
+            foreach (FileInfo file in dirInfo.GetFiles())
+            {
+                string newFileName = sanitizeInstaDate(Path.GetFileNameWithoutExtension(file.Name), file.DirectoryName, file.Extension);
+                file.MoveTo(newFileName);
+            }
+        }
+
+        private void fix_missing_dash_button_Click(object sender, EventArgs e)
+        {
+            string targetDirectoryString = folderPickerTextBox.Text;
+            DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
+
+            numStart = (int)startNumericUpDown.Value;
+
+            var newFileNameLinkedList = new LinkedList<string>();
+            filePathLinkedList.AddLast(targetDirectoryInfo);
+
+            try
+            {
+                foreach (FileInfo file in targetDirectoryInfo.GetFiles())
+                {
+                    newFileNameLinkedList.AddLast(file.FullName);
+
+                    string newName = file.Name.Insert(numStart, " - ");
+                    string newFullPath = $"{file.Directory}\\{newName}";
+                    Console.WriteLine(file.Name);
+                    file.MoveTo(newFullPath);
+                }
+
+                linkedListOfFileNameLinkedLists.AddLast(newFileNameLinkedList);
+            }
+            catch (Exception ex)
+            {
+                if (ex is DirectoryNotFoundException || ex is ArgumentException)
+                {
+                    MessageBox.Show("You must select a valid filepath please");
+                }
+            }
+        }
+
+        private void delete_all_button_Click(object sender, EventArgs e)
+        {
+            string targetDirectoryString = folderPickerTextBox.Text;
+            DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
+            DirectoryInfo[] directoryArray = targetDirectoryInfo.GetDirectories("*.*", SearchOption.TopDirectoryOnly);
+
+            try
+            {
+                foreach (DirectoryInfo directoryInfo in directoryArray)
+                {
+                    foreach (FileInfo file in directoryInfo.GetFiles())
+                    {
+                        Console.WriteLine("deleting " + file.Name);
+                        File.Delete(file.FullName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex is DirectoryNotFoundException || ex is ArgumentException)
+                {
+                    MessageBox.Show("You must select a valid filepath please");
+                }
+            }
+
+        }
+
+        private void enbiggify_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string targetDirectoryString = folderPickerTextBox.Text;
+                DirectoryInfo targetDirectoryInfo = new DirectoryInfo(targetDirectoryString);
+                enbiggifier(targetDirectoryInfo);
+            }
+            catch (Exception ex)
+            {
+                if (ex is DirectoryNotFoundException || ex is ArgumentException)
+                {
+                    MessageBox.Show("You must select a valid filepath please");
+                }
+            }
+        }
+
+        private void enbiggifier(DirectoryInfo dirInfo)
+        {
+            List<string> imageFiles = Directory.GetFiles(dirInfo.FullName, "*.*", SearchOption.AllDirectories).ToList();
+            foreach (string file in imageFiles)
+            {
+                try
+                {
+                    System.Drawing.Image currImage = System.Drawing.Image.FromFile(file);
+                    FileInfo fileInfo = new FileInfo(file);
+                    Bitmap bmp = new Bitmap(file);
+
+                    if(bmp.Height < 1920 || bmp.Width < 1080)
+                    {
+                        var enbiggifiedImage = enbiggifyImage(bmp);
+                        enbiggifiedImage.Save(fileInfo.Name, ImageFormat.Bmp);
+                    }
+                    bmp.Dispose();
+                    currImage.Dispose();
+                }
+                catch (Exception)
+                {
+                    continue;
+                }
+            }
+
+            MessageBox.Show("Operation Complete");
+        }
+
+        private Bitmap enbiggifyImage(Bitmap image)
+        {
+            int newHeight = image.Height;
+            int newWidth = image.Width;
+
+
+            do
+            {
+                newHeight = newHeight * 2;
+                newWidth = newWidth *2;
+            } 
+            while (newHeight < 1920 || newWidth < 1080);
+
+            Console.WriteLine(newHeight);
+            Console.WriteLine(newWidth);
+
+            var destRect = new Rectangle(0, 0, newWidth, newHeight);
+            var destImage = new Bitmap(newWidth, newHeight, PixelFormat.Format16bppRgb555);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage))
+            {
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes())
+                {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+
+                graphics.Dispose();
+            }
+
+            return destImage;
+        }
+
+
 
         // TO DO: create a replace string function
         // TO DO: ability to open from folder context menu with folder path pre loaded

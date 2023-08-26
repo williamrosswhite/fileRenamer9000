@@ -51,6 +51,10 @@
             this.button1 = new System.Windows.Forms.Button();
             this.nameFromDateButton = new System.Windows.Forms.Button();
             this.UndoButton = new System.Windows.Forms.Button();
+            this.scrapeCleaner = new System.Windows.Forms.Button();
+            this.fix_missing_dash_button = new System.Windows.Forms.Button();
+            this.delete_all_button = new System.Windows.Forms.Button();
+            this.enbiggify = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.startNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -266,11 +270,59 @@
             this.UndoButton.UseVisualStyleBackColor = true;
             this.UndoButton.Click += new System.EventHandler(this.UndoButton_Click);
             // 
+            // scrapeCleaner
+            // 
+            this.scrapeCleaner.Location = new System.Drawing.Point(297, 438);
+            this.scrapeCleaner.Margin = new System.Windows.Forms.Padding(2);
+            this.scrapeCleaner.Name = "scrapeCleaner";
+            this.scrapeCleaner.Size = new System.Drawing.Size(120, 31);
+            this.scrapeCleaner.TabIndex = 33;
+            this.scrapeCleaner.Text = "Scrape Cleaner";
+            this.scrapeCleaner.UseVisualStyleBackColor = true;
+            this.scrapeCleaner.Click += new System.EventHandler(this.ScrapeCleaner_Click);
+            // 
+            // fix_missing_dash_button
+            // 
+            this.fix_missing_dash_button.Location = new System.Drawing.Point(15, 438);
+            this.fix_missing_dash_button.Margin = new System.Windows.Forms.Padding(2);
+            this.fix_missing_dash_button.Name = "fix_missing_dash_button";
+            this.fix_missing_dash_button.Size = new System.Drawing.Size(120, 31);
+            this.fix_missing_dash_button.TabIndex = 34;
+            this.fix_missing_dash_button.Text = "Fix Missing Dash";
+            this.fix_missing_dash_button.UseVisualStyleBackColor = true;
+            this.fix_missing_dash_button.Click += new System.EventHandler(this.fix_missing_dash_button_Click);
+            // 
+            // delete_all_button
+            // 
+            this.delete_all_button.Location = new System.Drawing.Point(156, 438);
+            this.delete_all_button.Margin = new System.Windows.Forms.Padding(2);
+            this.delete_all_button.Name = "delete_all_button";
+            this.delete_all_button.Size = new System.Drawing.Size(120, 31);
+            this.delete_all_button.TabIndex = 35;
+            this.delete_all_button.Text = "Nuke It From Orbit";
+            this.delete_all_button.UseVisualStyleBackColor = true;
+            this.delete_all_button.Click += new System.EventHandler(this.delete_all_button_Click);
+            // 
+            // enbiggify
+            // 
+            this.enbiggify.Location = new System.Drawing.Point(438, 438);
+            this.enbiggify.Margin = new System.Windows.Forms.Padding(2);
+            this.enbiggify.Name = "enbiggify";
+            this.enbiggify.Size = new System.Drawing.Size(120, 31);
+            this.enbiggify.TabIndex = 36;
+            this.enbiggify.Text = "Enbiggify";
+            this.enbiggify.UseVisualStyleBackColor = true;
+            this.enbiggify.Click += new System.EventHandler(this.enbiggify_Click);
+            // 
             // fileRenamer9000
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(575, 443);
+            this.ClientSize = new System.Drawing.Size(569, 491);
+            this.Controls.Add(this.enbiggify);
+            this.Controls.Add(this.delete_all_button);
+            this.Controls.Add(this.fix_missing_dash_button);
+            this.Controls.Add(this.scrapeCleaner);
             this.Controls.Add(this.UndoButton);
             this.Controls.Add(this.nameFromDateButton);
             this.Controls.Add(this.button1);
@@ -325,6 +377,10 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button nameFromDateButton;
         private System.Windows.Forms.Button UndoButton;
+        private System.Windows.Forms.Button scrapeCleaner;
+        private System.Windows.Forms.Button fix_missing_dash_button;
+        private System.Windows.Forms.Button delete_all_button;
+        private System.Windows.Forms.Button enbiggify;
     }
 }
 
